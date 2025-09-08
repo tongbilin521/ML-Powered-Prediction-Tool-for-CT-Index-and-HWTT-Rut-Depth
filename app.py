@@ -6,12 +6,21 @@ import numpy as np
 from sklearn.metrics import r2_score
 
 # ======== 公共设置 ========
-feature_cols = ["RAP ", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
+feature_cols = ["RAP", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
 plt.rcParams.update({'font.size': 24})  # 调整全局字体
 
 # 自定义 percentage error 函数
 def percentage_error_func(y_true, y_pred):
     return np.mean(np.abs((y_true - y_pred) / y_true))
+
+# 对齐列名的工具函数
+def align_columns(df, scaler):
+    """保证输入 df 的列名和 scaler 训练时完全一致"""
+    scaler_cols = list(scaler.feature_names_in_)
+    col_map = {c.strip(): c for c in scaler_cols}   # 去空格映射回原始列名
+    df.columns = [c.strip() for c in df.columns]    # 输入列名去空格
+    df = df.rename(columns=col_map)                 # 重命名成 scaler 的列名
+    return df[scaler_cols]                          # 严格保持训练时的顺序
 
 # 批量评估函数
 def evaluate_and_plot(ax, model_path, scaler_path, file, target_col, title, x_label, y_label):
@@ -21,15 +30,19 @@ def evaluate_and_plot(ax, model_path, scaler_path, file, target_col, title, x_la
     df = pd.read_excel(file)
     df.columns = df.columns.str.strip()
 
+    # 检查是否包含所有需要的列
+    missing = [c for c in feature_cols if c not in df.columns]
+    if missing:
+        st.error(f"❌ Missing required columns in Excel: {missing}")
+        return
+
     X_new = df[feature_cols]
     y_actual = df[target_col]
 
-    # 自动对齐列名
-    col_map = {c.strip(): c for c in scaler.feature_names_in_}
-    X_new = X_new.rename(columns=col_map)
+    # 对齐列名
+    X_new = align_columns(X_new, scaler)
 
-    X_new_scaled = scaler.transform(X_new)
-    y_pred = final_model.predict(X_new_scaled)
+    y_pred = final_model.predict(scaler.transform(X_new))
 
     # 计算指标
     r2 = r2_score(y_actual, y_pred)
@@ -97,13 +110,13 @@ if mode == "Single Prediction":
         model_rd = joblib.load("best_model_HWTT RD.pkl")
         scaler_rd = joblib.load("scaler_HWTT RD.pkl")
 
-        # CT Index 预测
-        manual_scaled_ct = scaler_ct.transform(manual_input)
-        pred_ct = model_ct.predict(manual_scaled_ct)
+        # 对齐列名
+        manual_input_ct = align_columns(manual_input.copy(), scaler_ct)
+        manual_input_rd = align_columns(manual_input.copy(), scaler_rd)
 
-        # HWTT RD 预测
-        manual_scaled_rd = scaler_rd.transform(manual_input)
-        pred_rd = model_rd.predict(manual_scaled_rd)
+        # 预测
+        pred_ct = model_ct.predict(scaler_ct.transform(manual_input_ct))
+        pred_rd = model_rd.predict(scaler_rd.transform(manual_input_rd))
 
         st.success(f"✅ Predicted CT Index: {pred_ct[0]:.2f}")
         st.success(f"✅ Predicted HWTT Rut Depth: {pred_rd[0]:.2f} mm")
@@ -140,4 +153,5 @@ else:
         )
 
         st.pyplot(fig)
+
 
