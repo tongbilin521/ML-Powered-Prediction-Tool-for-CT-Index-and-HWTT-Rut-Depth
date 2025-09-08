@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import r2_score
 
 # ======== 公共设置 ========
-feature_cols = ["RAP", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
+feature_cols = ["RAP ", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
 plt.rcParams.update({'font.size': 24})  # 调整全局字体
 
 # 自定义 percentage error 函数
