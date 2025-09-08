@@ -17,7 +17,7 @@ st.title("ML-Powered Prediction Tool for Mix Type IVS")
 st.markdown("### Please enter mix design parameters:")
 
 # === 3. User inputs via Web ===
-rap = st.number_input("RAP contents (%)", min_value=0.0, max_value=20.0, step=0.5)
+rap = st.number_input("RAP contents (%)(input range: 0-20)", min_value=0.0, max_value=20.0, step=5.0)
 
 binder = st.selectbox("Binder Type", options=[1, 2],
                       format_func=lambda x: "PG 70-28" if x == 1 else "PG 58E-34")
@@ -37,11 +37,11 @@ additives_options = {
 additive = st.selectbox("Additives", options=list(additives_options.keys()),
                         format_func=lambda x: additives_options[x])
 
-gyration = st.number_input("Design Gyration", min_value=30.0, max_value=100.0, step=1.0)
-bsg = st.number_input("BSG", min_value=1.5, max_value=3.0, step=0.01)
-vma = st.number_input("VMA", min_value=5.0, max_value=25.0, step=0.1)
-db_ratio = st.number_input("D/B ratio", min_value=0.5, max_value=2.0, step=0.01)
-ac = st.number_input("Asphalt Content (AC, %)", min_value=2.0, max_value=10.0, step=0.1)
+gyration = st.number_input("Design Gyration (input range: 50-80)", min_value=50.0, max_value=80.0, step=5.0)
+bsg = st.number_input("BSG (input range: 2-3)", min_value=2.0, max_value=3.0, step=0.001)
+vma = st.number_input("VMA (input range: 12-20)", min_value=12.0, max_value=20.0, step=0.1)
+db_ratio = st.number_input("D/B ratio (input range: 0-2)", min_value=0.0, max_value=2.0, step=0.1)
+ac = st.number_input("Asphalt Content, % (input range: 2-8.5)", min_value=2.0, max_value=8.5, step=0.1)
 
 # === 4. Collect input ===
 user_input = [rap, binder, gyration, additive, bsg, vma, db_ratio, ac]
