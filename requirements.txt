@@ -4,4 +4,7 @@ numpy
 scikit-learn
 joblib
 xgboost
+matplotlib
+xgboost
+openpyxl
 
