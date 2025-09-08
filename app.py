@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import r2_score
 
 # ======== 公共设置 ========
-feature_cols = ["RAP", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
+feature_cols = ["RAP", "Binder Type", "Design Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
 plt.rcParams.update({'font.size': 24})  # 调整全局字体
 
 # 自定义 percentage error 函数
@@ -135,7 +135,7 @@ else:
             model_path="best_model_CT Index.pkl",
             scaler_path="scaler_CT Index.pkl",
             file=file_ct,
-            target_col="Avg. CT index",
+            target_col="Avg. CT Index",
             title="Predicted vs Actual CT index",
             x_label="Actual CT index",
             y_label="Predicted CT index"
@@ -146,7 +146,7 @@ else:
             model_path="best_model_HWTT RD.pkl",
             scaler_path="scaler_HWTT RD.pkl",
             file=file_rd,
-            target_col="Avg. Rut Depth",
+            target_col="Avg. RD",
             title="Predicted vs Actual HWTT RD",
             x_label="Actual HWTT RD",
             y_label="Predicted HWTT RD"
