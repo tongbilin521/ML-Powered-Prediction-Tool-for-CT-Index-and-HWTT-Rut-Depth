@@ -24,15 +24,16 @@ def evaluate_and_plot(ax, model_path, scaler_path, file, target_col, title, x_la
     X_new = df[feature_cols]
     y_actual = df[target_col]
 
-    # 自动对齐列名（按 scaler 的训练顺序）
+    # === 自动对齐列名（保证和训练时完全一致） ===
+    scaler_cols = list(scaler.feature_names_in_)          # 训练时的原始列名
+    col_map = {c.strip(): c for c in scaler_cols}         # 去空格映射回原始列名
+
+    # Excel 列名去空格再重命名成 scaler 的原始列名
     X_new.columns = [c.strip() for c in X_new.columns]
-    scaler_cols = [c.strip() for c in scaler.feature_names_in_]
+    X_new = X_new.rename(columns=col_map)
 
-    if set(X_new.columns) != set(scaler_cols):
-        st.warning(f"⚠️ Column mismatch! Excel columns: {list(X_new.columns)}, "
-                   f"Expected: {scaler_cols}")
-
-    X_new = X_new[scaler_cols]  # 强制按 scaler 的列顺序排列
+    # 强制按照 scaler 的列顺序排列
+    X_new = X_new[scaler_cols]
 
 
     X_new_scaled = scaler.transform(X_new)
@@ -70,7 +71,7 @@ mode = st.radio("Select Prediction Mode:", ["Single Prediction", "Batch Predicti
 if mode == "Single Prediction":
     st.subheader("🔹 Single Prediction (Manual Input)")
     # 输入表单
-    rap = st.number_input("RAP contents (%)", min_value=0.0, max_value=20.0, step=0.5)
+    rap = st.number_input("RAP contents (%)(input range: 0-20)", min_value=0.0, max_value=20.0, step=5.0)
     binder = st.selectbox("Binder Type", options=[1, 2],
                           format_func=lambda x: "PG 70-28" if x == 1 else "PG 58E-34")
     additives_options = {
