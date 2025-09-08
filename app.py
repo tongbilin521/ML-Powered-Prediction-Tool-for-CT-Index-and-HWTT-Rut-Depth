@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import r2_score
 
 # ======== 公共设置 ========
-feature_cols = ["RAP ", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
+feature_cols = ["RAP", "Binder Type", "Gyration", "Additives", "BSG", "VMA", "D/B", "AC, %"]
 plt.rcParams.update({'font.size': 24})  # 调整全局字体
 
 # 自定义 percentage error 函数
@@ -24,17 +24,9 @@ def evaluate_and_plot(ax, model_path, scaler_path, file, target_col, title, x_la
     X_new = df[feature_cols]
     y_actual = df[target_col]
 
-    # === 自动对齐列名（保证和训练时完全一致） ===
-    scaler_cols = list(scaler.feature_names_in_)          # 训练时的原始列名
-    col_map = {c.strip(): c for c in scaler_cols}         # 去空格映射回原始列名
-
-    # Excel 列名去空格再重命名成 scaler 的原始列名
-    X_new.columns = [c.strip() for c in X_new.columns]
+    # 自动对齐列名
+    col_map = {c.strip(): c for c in scaler.feature_names_in_}
     X_new = X_new.rename(columns=col_map)
-
-    # 强制按照 scaler 的列顺序排列
-    X_new = X_new[scaler_cols]
-
 
     X_new_scaled = scaler.transform(X_new)
     y_pred = final_model.predict(X_new_scaled)
